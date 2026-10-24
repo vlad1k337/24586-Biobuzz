@@ -35,7 +35,7 @@ public class AutoRedShoot extends OpMode {
         return sequential(
                 shooter.startPollenCommand(),
                 intake.startCommand(),
-                waitMs(3000),
+                waitMs(4000),
                 shooter.stopPollenCommand(),
                 intake.stopCommand()
         );
@@ -71,7 +71,9 @@ public class AutoRedShoot extends OpMode {
     @Override
     public void loop()
     {
+        shooter.updateFeedforward();
         follower.update();
+
         Scheduler.execute();
     }
 }

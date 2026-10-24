@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.ivy.Command;
@@ -9,14 +10,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Shooter {
     private final DcMotorEx flywheelPollen;
     private final double kS = 0.055, kV = 0.0003937, kP = 0.005;
 
-    public final static double pollenSetVelocity = 1450;
+    public final static double pollenSetVelocity = 1460;
 
-    private static double pollenTargetVelocity = 0;
+    private double pollenTargetVelocity = 0;
 
     public Shooter(HardwareMap hardwareMap)
     {
@@ -27,25 +29,25 @@ public class Shooter {
         flywheelPollen.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void update(Gamepad gamepad1)
+    public void update(Gamepad gamepad)
     {
         updateFeedforward();
-        if(gamepad1.yWasPressed())
+        if(gamepad.yWasPressed())
         {
             pollenTargetVelocity = pollenSetVelocity;
         }
 
-        if(gamepad1.xWasPressed())
+        if(gamepad.xWasPressed())
         {
             pollenTargetVelocity = 0;
         }
 
-        if(gamepad1.rightBumperWasPressed())
+        if(gamepad.rightBumperWasPressed())
         {
             pollenTargetVelocity += 20;
         }
 
-        if(gamepad1.leftBumperWasPressed())
+        if(gamepad.leftBumperWasPressed())
         {
             pollenTargetVelocity -= 20;
         }
@@ -60,7 +62,7 @@ public class Shooter {
     {
         telemetry.addData("Flywheel Actual", flywheelPollen.getVelocity());
         telemetry.addData("Flywheel Target", pollenTargetVelocity);
-        telemetry.update();
+        telemetry.addData("Flywheel Current (A)", flywheelPollen.getCurrent(CurrentUnit.AMPS));
     }
 
     public void setPollenTargetVelocity(double newVelocity)
@@ -70,15 +72,11 @@ public class Shooter {
 
     public Command startPollenCommand()
     {
-        return Command.build()
-                .setExecute(() -> setPollenTargetVelocity(pollenSetVelocity))
-                .setDone(() -> Math.abs(flywheelPollen.getVelocity() - pollenTargetVelocity) < 40)
-                .requiring(flywheelPollen);
+        return instant(() -> setPollenTargetVelocity(pollenSetVelocity));
     }
 
     public Command stopPollenCommand()
     {
-        return Command.build()
-                .setExecute(() -> setPollenTargetVelocity(0));
+        return instant(() -> setPollenTargetVelocity(0));
     }
 }

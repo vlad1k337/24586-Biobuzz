@@ -17,6 +17,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
+    public enum Color {
+        RED,
+        BLUE
+    };
+
     public static MecanumConfig driveConfig = new MecanumConfig(c -> {
         c.frontLeftName.set("FL");
         c.frontRightName.set("FR");

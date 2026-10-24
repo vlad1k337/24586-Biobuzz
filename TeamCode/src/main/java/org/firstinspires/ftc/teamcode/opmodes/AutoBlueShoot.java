@@ -35,7 +35,7 @@ public class AutoBlueShoot extends OpMode {
         return sequential(
                 shooter.startPollenCommand(),
                 intake.startCommand(),
-                waitMs(3000),
+                waitMs(4000),
                 shooter.stopPollenCommand(),
                 intake.stopCommand()
         );
@@ -72,6 +72,7 @@ public class AutoBlueShoot extends OpMode {
     public void loop()
     {
         follower.update();
+        shooter.updateFeedforward();
         Scheduler.execute();
     }
 }

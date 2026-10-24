@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import static com.pedropathing.api.Paths.curve;
+import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -22,7 +23,7 @@ public class AutoBluePark extends OpMode {
 
     private Path park()
     {
-        return curve(startPose, parkControl, endPose).linear(startPose, endPose);
+        return line(startPosePark, endPosePark).linear(startPosePark, endPosePark);
     }
 
     private Command autoRoutine()
@@ -38,7 +39,7 @@ public class AutoBluePark extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPose);
+        follower.setPose(startPosePark);
         follower.update();
     }
 

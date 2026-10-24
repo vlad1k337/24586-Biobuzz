@@ -29,9 +29,9 @@ public class Tele1P extends OpMode {
     @Override
     public void loop()
     {
-        double forward = smooth(-gamepad1.left_stick_y);
-        double lateral = smooth(-gamepad1.left_stick_x);
-        double turn = smooth(-gamepad1.right_stick_x);
+        double forward = smooth(-gamepad1.left_stick_y, 2);
+        double lateral = smooth(-0.7 * gamepad1.left_stick_x, 2);
+        double turn = smooth(-0.7 * gamepad1.right_stick_x, 2);
 
         ManualDrive.driveOrHold(
                 follower,
@@ -40,18 +40,18 @@ public class Tele1P extends OpMode {
                 turn
         );
 
-        intake.update(gamepad1);
+        intake.update(gamepad1, gamepad2);
         shooter.update(gamepad1);
+
+        intake.updateTelemetry(telemetry);
         shooter.updateTelemetry(telemetry);
 
         follower.update();
         telemetry.update();
     }
 
-    private double smooth(double input)
+    private double smooth(double input, double power)
     {
-        final double power = 3;
-
         if(input > 0)
         {
             return pow(input, power);
