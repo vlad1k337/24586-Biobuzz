@@ -11,7 +11,7 @@ public class PoseVault {
 
         static Pose parkControl = poseFactory.of(120, 117, 0);
         static Pose endPose = poseFactory.of(130, 45, 180);
-        static Pose endPosePark = poseFactory.of(130, 25, 180);
+        static Pose endPosePark = poseFactory.of(125, 25, 180);
     }
 
     public static class Red {
@@ -20,6 +20,6 @@ public class PoseVault {
 
         static Pose parkControl = poseFactory.of(30, 30, 0);
         static Pose endPose = poseFactory.of(12, 95, 0);
-        static Pose endPosePark = poseFactory.of(12, 120, 0);
+        static Pose endPosePark = poseFactory.of(15, 120, 0);
     }
 }

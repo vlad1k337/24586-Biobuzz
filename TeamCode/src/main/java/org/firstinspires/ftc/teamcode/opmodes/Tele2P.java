@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static java.lang.Math.pow;
 
+import com.pedropathing.controllers.Controller;
+import com.pedropathing.controllers.PIDController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -17,6 +19,10 @@ public class Tele2P extends OpMode {
     private Intake intake;
     private Shooter shooter;
 
+    private Controller headingController;
+    private boolean headingLock = false;
+    private double targetHeading;
+
     @Override
     public void init()
     {
@@ -29,9 +35,9 @@ public class Tele2P extends OpMode {
     @Override
     public void loop()
     {
-        double forward = smooth(gamepad1.left_stick_y, 2.5);
-        double lateral = smooth(-0.7 * gamepad1.left_stick_x, 2);
-        double turn    = smooth(-0.7 * gamepad1.right_stick_x, 2);
+        double forward = smooth(-gamepad1.left_stick_y, 2.5);
+        double lateral = smooth(-0.8 * gamepad1.left_stick_x, 2);
+        double turn    = smooth(-0.8 * gamepad1.right_stick_x, 2);
 
         ManualDrive.driveOrHold(
                 follower,
@@ -41,7 +47,7 @@ public class Tele2P extends OpMode {
         );
 
         intake.update(gamepad1, gamepad2);
-        shooter.update(gamepad2);
+        shooter.update(gamepad1, gamepad2);
 
         intake.updateTelemetry(telemetry);
         shooter.updateTelemetry(telemetry);
