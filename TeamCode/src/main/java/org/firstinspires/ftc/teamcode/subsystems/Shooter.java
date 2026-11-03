@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Shooter {
     private final DcMotorEx flywheelPollen, flywheelNectar;
-    private final double kS = 0.055, kV = 0.0003937, kP = 0.005;
+    private final double kS = 0.054, kV = 0.0003937, kP = 0.005;
 
     public final static double pollenSetVelocity = 1310;
     public final static double nectarSetVelocity = 1310;

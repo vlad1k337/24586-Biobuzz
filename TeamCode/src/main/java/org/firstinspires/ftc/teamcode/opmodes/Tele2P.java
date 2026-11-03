@@ -19,10 +19,6 @@ public class Tele2P extends OpMode {
     private Intake intake;
     private Shooter shooter;
 
-    private Controller headingController;
-    private boolean headingLock = false;
-    private double targetHeading;
-
     @Override
     public void init()
     {
