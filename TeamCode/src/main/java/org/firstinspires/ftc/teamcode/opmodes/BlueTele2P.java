@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.misc.Alliance;
-import org.firstinspires.ftc.teamcode.teleops.Tele2PHeadingLock;
+import org.firstinspires.ftc.teamcode.teleops.Tele2P;
 
 @TeleOp
-public class Tele2PHeadingLockBlue extends Tele2PHeadingLock {
-    public Tele2PHeadingLockBlue()
+public class BlueTele2P extends Tele2P {
+    public BlueTele2P()
     {
         super(Alliance.BLUE);
     }

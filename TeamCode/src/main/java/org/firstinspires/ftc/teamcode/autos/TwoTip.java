@@ -1,33 +1,35 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.autos;
 
-import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import static org.firstinspires.ftc.teamcode.opmodes.PoseVault.Blue.*;
+import org.firstinspires.ftc.teamcode.misc.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
+import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
-import com.pedropathing.paths.Path;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
-@Autonomous
-public class AutoBlueShoot extends OpMode {
+public class TwoTip extends OpMode {
+    private final Alliance alliance;
+
     private Follower follower;
     private Shooter shooter;
     private Intake intake;
 
-    private Path park()
+    private PoseVault poses;
+
+    public TwoTip(Alliance alliance)
     {
-        return curve(startPose, parkControl, endPose).linear(startPose, endPose);
+        this.alliance = alliance;
     }
 
     private Command shoot4()
@@ -35,9 +37,12 @@ public class AutoBlueShoot extends OpMode {
         return sequential(
                 shooter.startPollenCommand(),
                 intake.openGateCommand(),
+                waitMs(2000),
                 intake.startCommand(),
+
                 waitMs(4000),
                 shooter.stopPollenCommand(),
+
                 intake.stopCommand(),
                 intake.closeGateCommand()
         );
@@ -47,7 +52,14 @@ public class AutoBlueShoot extends OpMode {
     {
         return sequential(
                 shoot4(),
-                follow(follower, park())
+
+                intake.startCommand(),
+                follow(follower, poses.pickGarden),
+                waitMs(1500),
+                intake.stopCommand(),
+                follow(follower, poses.moveToShootGarden),
+                shoot4(),
+                follow(follower, poses.parkFromGarden)
         );
     }
 
@@ -56,8 +68,10 @@ public class AutoBlueShoot extends OpMode {
     {
         Scheduler.reset();
 
+        poses = new PoseVault(alliance);
+
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPose);
+        follower.setPose(poses.startPose);
         follower.update();
 
         shooter = new Shooter(hardwareMap);
@@ -73,8 +87,9 @@ public class AutoBlueShoot extends OpMode {
     @Override
     public void loop()
     {
-        follower.update();
         shooter.updateFeedforward();
+
+        follower.update();
         Scheduler.execute();
     }
 

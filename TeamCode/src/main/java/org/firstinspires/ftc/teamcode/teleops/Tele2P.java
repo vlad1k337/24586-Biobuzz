@@ -6,9 +6,7 @@ import com.pedropathing.controllers.PIDController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.misc.Alliance;
@@ -19,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 import java.util.List;
 
-public class Tele2PHeadingLock extends OpMode {
+public class Tele2P extends OpMode {
     private final Alliance alliance;
 
     private Follower follower;
@@ -34,7 +32,7 @@ public class Tele2PHeadingLock extends OpMode {
     private Pose hiveClose;
     private Pose hiveFar;
 
-    public Tele2PHeadingLock(Alliance alliance)
+    public Tele2P(Alliance alliance)
     {
         this.alliance = alliance;
     }
@@ -79,7 +77,7 @@ public class Tele2PHeadingLock extends OpMode {
 
         double forward = smooth(-gamepad1.left_stick_y, 2.5);
         double lateral = smooth(-0.8 * gamepad1.left_stick_x, 2);
-        double turn    = smooth(-0.8 * gamepad1.right_stick_x, 2);
+        double turn    = smooth(-0.7 * gamepad1.right_stick_x, 1);
 
         if(headingLock)
         {

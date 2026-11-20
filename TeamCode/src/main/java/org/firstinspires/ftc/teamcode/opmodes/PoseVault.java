@@ -7,30 +7,45 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
+import org.firstinspires.ftc.teamcode.misc.Alliance;
+
 public class PoseVault {
-    final static PoseFactory poseFactory = PoseFactory.degrees();
-    public static class Blue {
-        static Pose startPose = poseFactory.of(84, 132, 90);
-        static Pose parkControl = poseFactory.of(120, 117, 0);
-        static Pose endPose = poseFactory.of(130, 45, 180);
+    private final PoseFactory poseFactory;
 
-        static Pose startPosePark = poseFactory.of(105, 8, 90);
-        static Pose endPosePark = poseFactory.of(125, 25, 180);
+    public Pose startPose;
+    public Pose endPose;
+
+    public Pose startPosePark;
+    public Pose parkControl;
+    public Pose endPosePark;
+
+    public Pose garden;
+    public Pose shootFar;
+
+    public Path pickGarden;
+    public Path moveToShootGarden;
+    public Path parkFromGarden;
+
+    public PoseVault(Alliance alliance) {
+        if (alliance == Alliance.RED) {
+            poseFactory = PoseFactory.degrees();
+        } else {
+            poseFactory = PoseFactory.degrees().mirrorX(70.75).mirrorY(70.75);
+        }
+
+        startPose = poseFactory.of(58, 8, 270);
+        endPose = poseFactory.of(13, 93, 0);
+
+        startPosePark = poseFactory.of(36, 133, 270);
+        parkControl = poseFactory.of(30, 30, 0);
+        endPosePark = poseFactory.of(15, 120, 0);
+
+        garden = poseFactory.of(8, 8, 270);
+        shootFar = poseFactory.of(57, 128, 90);
+
+        pickGarden = curve(startPose, poseFactory.of(25, 51, 0), garden).linear(startPose, garden);
+        moveToShootGarden = curve(garden, poseFactory.of(28, 107, 0), shootFar).linear(garden, shootFar);
+        parkFromGarden = line(shootFar, endPose).linear(shootFar, endPose);
     }
 
-    public static class Red {
-        static Pose startPose = poseFactory.of(58, 8, 270);
-        static Pose parkControl = poseFactory.of(30, 30, 0);
-        static Pose endPose = poseFactory.of(12, 93, 0);
-
-        static Pose startPosePark = poseFactory.of(36, 133, 270);
-        static Pose endPosePark = poseFactory.of(15, 120, 0);
-
-        static Pose garden = poseFactory.of(8,8, 270);
-        static Pose shootFar = poseFactory.of(57,129, 90);
-
-        static Path pickGarden        = curve(startPose, poseFactory.of(25, 51, 0), garden).linear(startPose, garden);
-        static Path moveToShootGarden = curve(garden, poseFactory.of(25, 110, 0), shootFar).linear(garden, shootFar);
-        static Path parkFromGarden    = line(shootFar, endPose).linear(shootFar, endPose);
-    }
 }

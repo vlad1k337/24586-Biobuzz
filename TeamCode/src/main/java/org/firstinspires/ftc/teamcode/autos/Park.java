@@ -1,29 +1,36 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.autos;
 
-import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import static org.firstinspires.ftc.teamcode.opmodes.PoseVault.Blue.*;
+import org.firstinspires.ftc.teamcode.misc.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
+import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.paths.Path;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous
-public class AutoBluePark extends OpMode {
+public class Park extends OpMode {
+    private final Alliance alliance;
+
     private Follower follower;
+    private PoseVault poses;
+
+    public Park(Alliance alliance)
+    {
+        this.alliance = alliance;
+    }
 
     private Path park()
     {
-        return line(startPosePark, endPosePark).linear(startPosePark, endPosePark);
+        return line(poses.startPosePark, poses.endPosePark).linear(poses.startPosePark, poses.endPosePark);
     }
 
     private Command autoRoutine()
@@ -38,8 +45,10 @@ public class AutoBluePark extends OpMode {
     {
         Scheduler.reset();
 
+        poses = new PoseVault(alliance);
+
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPosePark);
+        follower.setPose(poses.startPosePark);
         follower.update();
     }
 
