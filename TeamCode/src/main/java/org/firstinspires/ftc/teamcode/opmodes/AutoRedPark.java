@@ -56,4 +56,10 @@ public class AutoRedPark extends OpMode {
         follower.update();
         Scheduler.execute();
     }
+
+    @Override
+    public void stop()
+    {
+        OpModeStorage.autonomousEndPose = follower.pose();
+    }
 }

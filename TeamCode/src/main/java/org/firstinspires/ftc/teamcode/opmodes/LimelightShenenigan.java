@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 import java.util.List;
 
@@ -19,14 +20,17 @@ public class LimelightShenenigan extends OpMode {
     private Limelight3A limelight;
 
     private Follower follower;
+    private Intake intake;
 
     private PIDController headingController;
-    private boolean headingLock = false;
-
-    private double fx = 1209;
-    private double pollenWidth = 2.8; // inches
-
+    private boolean pollenLock = false;
     private boolean wasDetected = false;
+
+    // focal length in pixels
+    private final double fx = 1209;
+
+    // pollen width in inches
+    private final double pollenWidth = 2.8;
 
     private double getPollenTx()
     {
@@ -78,6 +82,8 @@ public class LimelightShenenigan extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(new Pose(0, 0,0));
 
+        intake = new Intake(hardwareMap);
+
         headingController = new PIDController(1, 0, 0.1);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -85,23 +91,25 @@ public class LimelightShenenigan extends OpMode {
         limelight.start();
     }
 
-    private void updateDrive(double tx)
+    private void updateDrive()
     {
         if(gamepad1.leftStickButtonWasPressed())
         {
-            headingLock = !headingLock;
+            pollenLock = !pollenLock;
         }
+
+        double tx = Math.toRadians(getPollenTx());
 
         double forward = -gamepad1.left_stick_y;
         double lateral = -0.8 * gamepad1.left_stick_x;
         double turn    = -0.8 * gamepad1.right_stick_x;
 
-        if(headingLock)
+        if(pollenLock)
         {
             double targetHeading = follower.pose().heading() - tx;
             double headingError  = AngleUnit.normalizeRadians(targetHeading - follower.pose().heading());
 
-            if(Math.abs(headingError) < Math.toRadians(7))
+            if(Math.abs(headingError) < Math.toRadians(7.5))
             {
                 headingError = 0;
             }
@@ -110,12 +118,26 @@ public class LimelightShenenigan extends OpMode {
             telemetry.addData("Error", Math.toDegrees(headingError));
             telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
 
-            follower.manual(
-                    forward + (wasDetected ? 0.3 : 0),
-                    lateral,
-                    0.75 * headingController.calculate(targetHeading, headingError)
-            );
+            if(wasDetected)
+            {
+                intake.start();
+                // Pollen captured, move to the target
+                follower.manual(
+                        forward + 0.3,
+                        lateral,
+                        0.75 * headingController.calculate(targetHeading, headingError)
+                );
+            } else {
+                intake.stop();
+                // Nothing visible, spin around until robot sees pollen
+                follower.manual(
+                        forward,
+                        lateral,
+                        0.3
+                );
+            }
         } else {
+            // No pollenLock, robot controls are given to the driver
             follower.manual(
                     forward,
                     lateral,
@@ -127,9 +149,9 @@ public class LimelightShenenigan extends OpMode {
     @Override
     public void loop()
     {
-        double tx = Math.toRadians(getPollenTx());
+        updateDrive();
 
-        updateDrive(tx);
+        intake.update(gamepad1, gamepad2);
 
         follower.update();
 

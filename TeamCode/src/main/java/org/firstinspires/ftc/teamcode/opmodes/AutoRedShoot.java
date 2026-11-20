@@ -34,10 +34,12 @@ public class AutoRedShoot extends OpMode {
     {
         return sequential(
                 shooter.startPollenCommand(),
+                intake.openGateCommand(),
                 intake.startCommand(),
                 waitMs(4000),
                 shooter.stopPollenCommand(),
-                intake.stopCommand()
+                intake.stopCommand(),
+                intake.closeGateCommand()
         );
     }
 
@@ -75,5 +77,11 @@ public class AutoRedShoot extends OpMode {
         follower.update();
 
         Scheduler.execute();
+    }
+
+    @Override
+    public void stop()
+    {
+        OpModeStorage.autonomousEndPose = follower.pose();
     }
 }

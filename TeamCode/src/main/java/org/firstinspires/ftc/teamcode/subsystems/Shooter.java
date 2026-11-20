@@ -14,10 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Shooter {
     private final DcMotorEx flywheelPollen, flywheelNectar;
-    private final double kS = 0.054, kV = 0.0003937, kP = 0.005;
+    private final double kS = 0.054, kV = 0.0003937, kP = 0.003;
 
-    public final static double pollenSetVelocity = 1310;
-    public final static double nectarSetVelocity = 1310;
+    public final static double pollenSetVelocity = 1290;
+    public final static double nectarSetVelocity = 1410;
 
     private double pollenTargetVelocity = 0;
     private double nectarTargetVelocity = 0;
@@ -41,6 +41,7 @@ public class Shooter {
     public void update(Gamepad gamepad1, Gamepad gamepad2)
     {
         updateFeedforward();
+
         if(gamepad1.yWasPressed() || gamepad2.yWasPressed())
         {
             pollenTargetVelocity = pollenSetVelocity;
@@ -56,11 +57,13 @@ public class Shooter {
         if(gamepad1.rightBumperWasPressed() || gamepad2.rightBumperWasPressed())
         {
             pollenTargetVelocity += 20;
+            nectarTargetVelocity += 20;
         }
 
         if(gamepad1.leftBumperWasPressed() || gamepad2.leftBumperWasPressed())
         {
             pollenTargetVelocity -= 20;
+            nectarTargetVelocity -= 20;
         }
     }
 
@@ -73,8 +76,13 @@ public class Shooter {
     public void updateTelemetry(Telemetry telemetry)
     {
         telemetry.addData("Pollen Actual", flywheelPollen.getVelocity());
+        telemetry.addData("Nectar Actual", flywheelNectar.getVelocity());
+
         telemetry.addData("Pollen Target", pollenTargetVelocity);
+        telemetry.addData("Nectar Target", nectarTargetVelocity);
+
         telemetry.addData("Pollen Current (A)", flywheelPollen.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Nectar Current (A)", flywheelNectar.getCurrent(CurrentUnit.AMPS));
     }
 
     public void setPollenTargetVelocity(double newVelocity)
