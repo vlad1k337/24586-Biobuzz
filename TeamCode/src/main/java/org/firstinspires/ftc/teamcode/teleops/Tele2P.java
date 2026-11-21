@@ -52,11 +52,11 @@ public class Tele2P extends OpMode {
 
         if(alliance == Alliance.RED)
         {
-            hiveClose = new Pose(58, 56);
-            hiveFar   = new Pose(58, 86);
+            hiveClose = new Pose(59, 52.75);
+            hiveFar   = new Pose(59, 88.75);
         } else {
-            hiveClose = new Pose(84, 56);
-            hiveFar   = new Pose(84, 86);
+            hiveClose = new Pose(83, 52.75);
+            hiveFar   = new Pose(83, 88.75);
         }
 
         for (LynxModule hub : allHubs) {
@@ -66,10 +66,6 @@ public class Tele2P extends OpMode {
 
     public void updateDrive()
     {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
-        }
-
         if(gamepad1.leftStickButtonWasPressed())
         {
             headingLock = !headingLock;
@@ -117,6 +113,10 @@ public class Tele2P extends OpMode {
     @Override
     public void loop()
     {
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
+        
         updateDrive();
 
         intake.update(gamepad1, gamepad2);

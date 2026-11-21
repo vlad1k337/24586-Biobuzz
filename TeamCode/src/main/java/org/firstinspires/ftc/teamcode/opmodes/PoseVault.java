@@ -23,6 +23,7 @@ public class PoseVault {
     public Pose shootFar;
 
     public Path pickGarden;
+    public Path comeBackGarden;
     public Path moveToShootGarden;
     public Path parkFromGarden;
 
@@ -44,6 +45,7 @@ public class PoseVault {
         shootFar = poseFactory.of(57, 128, 90);
 
         pickGarden = curve(startPose, poseFactory.of(25, 51, 0), garden).linear(startPose, garden);
+        comeBackGarden = curve(garden, poseFactory.of(25, 51, 0), startPose).linear(garden, startPose);
         moveToShootGarden = curve(garden, poseFactory.of(28, 107, 0), shootFar).linear(garden, shootFar);
         parkFromGarden = line(shootFar, endPose).linear(shootFar, endPose);
     }

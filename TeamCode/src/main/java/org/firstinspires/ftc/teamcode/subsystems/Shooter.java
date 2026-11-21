@@ -16,7 +16,7 @@ public class Shooter {
     private final DcMotorEx flywheelPollen, flywheelNectar;
     private final double kS = 0.054, kV = 0.0003937, kP = 0.003;
 
-    public final static double pollenSetVelocity = 1290;
+    public final static double pollenSetVelocity = 1280;
     public final static double nectarSetVelocity = 1410;
 
     private double pollenTargetVelocity = 0;

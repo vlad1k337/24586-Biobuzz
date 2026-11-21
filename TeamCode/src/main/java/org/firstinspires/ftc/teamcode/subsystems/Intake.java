@@ -19,7 +19,7 @@ public class Intake {
     private final CRServo servo;
     private final Servo gate;
 
-    final double intakeMotorPower = 0.8;
+    final double intakeMotorPower = 0.85;
     final double servoPower       = 1.0;
 
     public Intake(HardwareMap hardwareMap)
@@ -57,7 +57,7 @@ public class Intake {
             closeGate();
         }
 
-        if(gamepad1.dpadUpWasPressed() || gamepad2.dpadDownWasPressed())
+        if(gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed())
         {
             openGate();
         }
