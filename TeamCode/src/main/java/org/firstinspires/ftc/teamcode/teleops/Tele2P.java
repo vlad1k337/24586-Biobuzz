@@ -7,11 +7,13 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.GaslightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
@@ -23,6 +25,7 @@ public class Tele2P extends OpMode {
     private Follower follower;
     private Intake intake;
     private Shooter shooter;
+    private GaslightSubsystem camera;
 
     private PIDController headingController;
     private boolean headingLock = false;
@@ -31,6 +34,8 @@ public class Tele2P extends OpMode {
 
     private Pose hiveClose;
     private Pose hiveFar;
+
+    private ElapsedTime loopTimer;
 
     public Tele2P(Alliance alliance)
     {
@@ -47,8 +52,14 @@ public class Tele2P extends OpMode {
 
         intake  = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        camera  = new GaslightSubsystem(hardwareMap);
+        camera.start();
 
         allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
         if(alliance == Alliance.RED)
         {
@@ -59,9 +70,7 @@ public class Tele2P extends OpMode {
             hiveFar   = new Pose(83, 88.75);
         }
 
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        }
+        loopTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
     public void updateDrive()
@@ -71,14 +80,14 @@ public class Tele2P extends OpMode {
             headingLock = !headingLock;
         }
 
-        double forward = smooth(-gamepad1.left_stick_y, 2.5);
-        double lateral = smooth(-0.8 * gamepad1.left_stick_x, 2);
-        double turn    = smooth(-0.7 * gamepad1.right_stick_x, 1);
+        double forward = smooth(-gamepad1.left_stick_y, 2.2);
+        double lateral = smooth(-gamepad1.left_stick_x, 2.2);
+        double turn    = smooth(-0.67 * gamepad1.right_stick_x, 1.5);
 
         if(headingLock)
         {
             double targetHeading;
-            if(follower.pose().y() < 77)
+            if(follower.pose().y() < 70.75)
             {
                 targetHeading = Math.atan2(
                         hiveClose.y() - follower.pose().y(),
@@ -113,6 +122,8 @@ public class Tele2P extends OpMode {
     @Override
     public void loop()
     {
+        double timeBeginning = loopTimer.milliseconds();
+
         for (LynxModule hub : allHubs) {
             hub.clearBulkCache();
         }
@@ -128,9 +139,12 @@ public class Tele2P extends OpMode {
         follower.update();
 
         telemetry.addData("Heading Lock", headingLock);
-
         telemetry.addData("X", follower.pose().x());
         telemetry.addData("Y", follower.pose().y());
+        telemetry.addData("AprilTag visible", camera.checkApriltag());
+
+        telemetry.addData("Loop Time", loopTimer.milliseconds() - timeBeginning);
+        loopTimer.reset();
 
         telemetry.update();
     }

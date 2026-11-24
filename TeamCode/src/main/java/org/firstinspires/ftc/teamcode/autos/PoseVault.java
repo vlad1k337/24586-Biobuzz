@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.autos;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
@@ -22,10 +22,12 @@ public class PoseVault {
     public Pose garden;
     public Pose shootFar;
 
+    public Path parkFromStart;
     public Path pickGarden;
     public Path comeBackGarden;
-    public Path moveToShootGarden;
-    public Path parkFromGarden;
+    public Path gardenToShootFar;
+    public Path moveToShootFar;
+    public Path parkFromFar;
 
     public PoseVault(Alliance alliance) {
         if (alliance == Alliance.RED) {
@@ -42,12 +44,16 @@ public class PoseVault {
         endPosePark = poseFactory.of(15, 120, 0);
 
         garden = poseFactory.of(8, 8, 270);
-        shootFar = poseFactory.of(57, 128, 90);
+        shootFar = poseFactory.of(58, 128, 90);
 
+        parkFromStart = curve(startPose, parkControl, endPose).linear(startPose, endPose);
         pickGarden = curve(startPose, poseFactory.of(25, 51, 0), garden).linear(startPose, garden);
         comeBackGarden = curve(garden, poseFactory.of(25, 51, 0), startPose).linear(garden, startPose);
-        moveToShootGarden = curve(garden, poseFactory.of(28, 107, 0), shootFar).linear(garden, shootFar);
-        parkFromGarden = line(shootFar, endPose).linear(shootFar, endPose);
+
+        gardenToShootFar = curve(garden, poseFactory.of(28, 107, 0), shootFar).linear(garden, shootFar);
+        moveToShootFar = curve(startPose, poseFactory.of(71, 71, 0), shootFar).linear(startPose, shootFar);
+
+        parkFromFar = line(shootFar, endPose).linear(shootFar, endPose);
     }
 
 }

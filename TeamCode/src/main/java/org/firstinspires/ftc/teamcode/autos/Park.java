@@ -7,7 +7,6 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
-import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;

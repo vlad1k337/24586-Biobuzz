@@ -2,60 +2,53 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.conditional;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
-import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
-import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.GaslightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
-/*
- Honorary Autonomous mode for usage with team 7229 BzBots on November 21, 2026
- */
-
-public class BzAuto extends OpMode {
+public class Adaptive extends OpMode {
     private final Alliance alliance;
 
     private Follower follower;
+
     private Shooter shooter;
     private Intake intake;
+    private GaslightSubsystem camera;
 
     private PoseVault poses;
 
-    public BzAuto(Alliance alliance)
+    public Adaptive(Alliance alliance)
     {
         this.alliance = alliance;
-    }
-
-    private Path park()
-    {
-        return curve(poses.startPose, poses.parkControl, poses.endPose).linear(poses.startPose, poses.endPose);
     }
 
     private Command shoot4()
     {
         return sequential(
-                shooter.startPollenCommand(),
-                intake.openGateCommand(),
+                shooter.startPollenCommand,
+                intake.openGateCommand,
                 waitMs(1000),
-                intake.startCommand(),
+                intake.startCommand,
 
-                waitMs(3500),
-                shooter.stopPollenCommand(),
+                waitMs(4000),
+                shooter.stopPollenCommand,
 
-                intake.stopCommand(),
-                intake.closeGateCommand()
+                intake.stopCommand,
+                intake.closeGateCommand
         );
     }
 
@@ -64,15 +57,30 @@ public class BzAuto extends OpMode {
         return sequential(
                 shoot4(),
 
-                intake.startCommand(),
+                intake.startCommand,
                 follow(follower, poses.pickGarden),
                 waitMs(1500),
-                intake.stopCommand(),
+                intake.stopCommand,
 
                 follow(follower, poses.comeBackGarden),
-                shoot4(),
+                waitMs(250),
 
-                follow(follower, park())
+                conditional(
+                        () -> camera.checkApriltag(),
+
+                        // did not tip :(
+                        sequential(
+                                shoot4(),
+                                follow(follower, poses.parkFromStart)
+                        ),
+
+                        // tipped yay :)
+                        sequential(
+                                follow(follower, poses.moveToShootFar),
+                                shoot4(),
+                                follow(follower, poses.parkFromFar)
+                        )
+                )
         );
     }
 
@@ -89,6 +97,8 @@ public class BzAuto extends OpMode {
 
         shooter = new Shooter(hardwareMap);
         intake  = new Intake(hardwareMap);
+        camera  = new GaslightSubsystem(hardwareMap);
+        camera.start();
     }
 
     @Override

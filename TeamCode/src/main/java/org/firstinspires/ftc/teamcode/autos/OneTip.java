@@ -7,7 +7,6 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
-import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -34,24 +33,19 @@ public class OneTip extends OpMode {
         this.alliance = alliance;
     }
 
-    private Path park()
-    {
-        return curve(poses.startPose, poses.parkControl, poses.endPose).linear(poses.startPose, poses.endPose);
-    }
-
     private Command shoot4()
     {
         return sequential(
-                shooter.startPollenCommand(),
-                intake.openGateCommand(),
+                shooter.startPollenCommand,
+                intake.openGateCommand,
                 waitMs(1000),
-                intake.startCommand(),
+                intake.startCommand,
 
                 waitMs(4000),
-                shooter.stopPollenCommand(),
+                shooter.stopPollenCommand,
 
-                intake.stopCommand(),
-                intake.closeGateCommand()
+                intake.stopCommand,
+                intake.closeGateCommand
         );
     }
 
@@ -59,7 +53,7 @@ public class OneTip extends OpMode {
     {
         return sequential(
                 shoot4(),
-                follow(follower, park())
+                follow(follower, poses.parkFromStart)
         );
     }
 

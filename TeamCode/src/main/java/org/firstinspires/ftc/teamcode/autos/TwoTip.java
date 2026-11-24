@@ -7,7 +7,6 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 import org.firstinspires.ftc.teamcode.opmodes.OpModeStorage;
-import org.firstinspires.ftc.teamcode.opmodes.PoseVault;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -35,16 +34,16 @@ public class TwoTip extends OpMode {
     private Command shoot4()
     {
         return sequential(
-                shooter.startPollenCommand(),
-                intake.openGateCommand(),
+                shooter.startPollenCommand,
+                intake.openGateCommand,
                 waitMs(2000),
-                intake.startCommand(),
+                intake.startCommand,
 
                 waitMs(4000),
-                shooter.stopPollenCommand(),
+                shooter.stopPollenCommand,
 
-                intake.stopCommand(),
-                intake.closeGateCommand()
+                intake.stopCommand,
+                intake.closeGateCommand
         );
     }
 
@@ -53,13 +52,13 @@ public class TwoTip extends OpMode {
         return sequential(
                 shoot4(),
 
-                intake.startCommand(),
+                intake.startCommand,
                 follow(follower, poses.pickGarden),
                 waitMs(1500),
-                intake.stopCommand(),
-                follow(follower, poses.moveToShootGarden),
+                intake.stopCommand,
+                follow(follower, poses.gardenToShootFar),
                 shoot4(),
-                follow(follower, poses.parkFromGarden)
+                follow(follower, poses.parkFromFar)
         );
     }
 

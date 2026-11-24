@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import org.firstinspires.ftc.teamcode.autos.BzAuto;
+import org.firstinspires.ftc.teamcode.autos.Adaptive;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 
 @Autonomous
-public class RedBzAuto extends BzAuto {
-    public RedBzAuto()
+public class BlueAdaptive extends Adaptive {
+    public BlueAdaptive()
     {
-        super(Alliance.RED);
+        super(Alliance.BLUE);
     }
 }

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static com.pedropathing.ivy.commands.Commands.instant;
 
 import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.CommandBuilder;
+import com.pedropathing.revhub.drivetrains.CachedMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -13,28 +15,28 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Shooter {
-    private final DcMotorEx flywheelPollen, flywheelNectar;
+    private final CachedMotor flywheelPollen, flywheelNectar;
     private final double kS = 0.054, kV = 0.0003937, kP = 0.003;
 
-    public final static double pollenSetVelocity = 1280;
-    public final static double nectarSetVelocity = 1410;
+    public final static double POLLEN_VELOCITY = 1280;
+    public final static double NECTAR_VELOCITY = 1410;
 
     private double pollenTargetVelocity = 0;
     private double nectarTargetVelocity = 0;
 
     public Shooter(HardwareMap hardwareMap)
     {
-        flywheelPollen = hardwareMap.get(DcMotorEx.class, "FlywheelPollen");
-        MotorConfigurationType pollenConfig = flywheelPollen.getMotorType().clone();
+        flywheelPollen = new CachedMotor(hardwareMap.get(DcMotorEx.class, "FlywheelPollen"), 0.001);
+        MotorConfigurationType pollenConfig = flywheelPollen.raw().getMotorType().clone();
         pollenConfig.setAchieveableMaxRPMFraction(1.0);
-        flywheelPollen.setMotorType(pollenConfig);
-        flywheelPollen.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelPollen.raw().setMotorType(pollenConfig);
+        flywheelPollen.raw().setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        flywheelNectar = hardwareMap.get(DcMotorEx.class, "FlywheelNectar");
-        MotorConfigurationType nectarConfig = flywheelNectar.getMotorType().clone();
+        flywheelNectar = new CachedMotor(hardwareMap.get(DcMotorEx.class, "FlywheelNectar"), 0.001);
+        MotorConfigurationType nectarConfig = flywheelNectar.raw().getMotorType().clone();
         nectarConfig.setAchieveableMaxRPMFraction(1.0);
-        flywheelNectar.setMotorType(nectarConfig);
-        flywheelNectar.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelNectar.raw().setMotorType(nectarConfig);
+        flywheelNectar.raw().setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         flywheelNectar.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -44,8 +46,8 @@ public class Shooter {
 
         if(gamepad1.yWasPressed() || gamepad2.yWasPressed())
         {
-            pollenTargetVelocity = pollenSetVelocity;
-            nectarTargetVelocity = nectarSetVelocity;
+            pollenTargetVelocity = POLLEN_VELOCITY;
+            nectarTargetVelocity = NECTAR_VELOCITY;
         }
 
         if(gamepad1.xWasPressed() || gamepad2.xWasPressed())
@@ -69,20 +71,20 @@ public class Shooter {
 
     public void updateFeedforward()
     {
-        flywheelPollen.setPower((kV * pollenTargetVelocity) + (kP * (pollenTargetVelocity - flywheelPollen.getVelocity())) + kS);
-        flywheelNectar.setPower((kV * nectarTargetVelocity) + (kP * (nectarTargetVelocity - flywheelNectar.getVelocity())) + kS);
+        flywheelPollen.setPower((kV * pollenTargetVelocity) + (kP * (pollenTargetVelocity - flywheelPollen.raw().getVelocity())) + kS);
+        flywheelNectar.setPower((kV * nectarTargetVelocity) + (kP * (nectarTargetVelocity - flywheelNectar.raw().getVelocity())) + kS);
     }
 
     public void updateTelemetry(Telemetry telemetry)
     {
-        telemetry.addData("Pollen Actual", flywheelPollen.getVelocity());
-        telemetry.addData("Nectar Actual", flywheelNectar.getVelocity());
+        telemetry.addData("Pollen Actual", flywheelPollen.raw().getVelocity());
+        telemetry.addData("Nectar Actual", flywheelNectar.raw().getVelocity());
 
         telemetry.addData("Pollen Target", pollenTargetVelocity);
         telemetry.addData("Nectar Target", nectarTargetVelocity);
 
-        telemetry.addData("Pollen Current (A)", flywheelPollen.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("Nectar Current (A)", flywheelNectar.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Pollen Current (A)", flywheelPollen.raw().getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Nectar Current (A)", flywheelNectar.raw().getCurrent(CurrentUnit.AMPS));
     }
 
     public void setPollenTargetVelocity(double newVelocity)
@@ -92,23 +94,9 @@ public class Shooter {
 
     public void setNectarTargetVelocity(double newVelocity) { nectarTargetVelocity = newVelocity; }
 
-    public Command startPollenCommand()
-    {
-        return instant(() -> setPollenTargetVelocity(pollenSetVelocity));
-    }
+    public CommandBuilder startPollenCommand = instant(() -> setPollenTargetVelocity(POLLEN_VELOCITY));
+    public CommandBuilder startNectarCommand = instant(() -> setNectarTargetVelocity(NECTAR_VELOCITY));
 
-    public Command startNectarCommand()
-    {
-        return instant(() -> setPollenTargetVelocity(pollenSetVelocity));
-    }
-
-    public Command stopPollenCommand()
-    {
-        return instant(() -> setPollenTargetVelocity(0));
-    }
-
-    public Command stopNectarCommand()
-    {
-        return instant(() -> setNectarTargetVelocity(0));
-    }
+    public CommandBuilder stopPollenCommand = instant(() -> setPollenTargetVelocity(0));
+    public CommandBuilder stopNectarCommand = instant(() -> setNectarTargetVelocity(0));
 }
