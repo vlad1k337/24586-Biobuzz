@@ -10,7 +10,6 @@ import com.pedropathing.paths.Path;
 import org.firstinspires.ftc.teamcode.misc.Alliance;
 
 public class PoseVault {
-    private final PoseFactory poseFactory;
 
     public Pose startPose;
     public Pose endPose;
@@ -30,6 +29,8 @@ public class PoseVault {
     public Path parkFromFar;
 
     public PoseVault(Alliance alliance) {
+        PoseFactory poseFactory;
+
         if (alliance == Alliance.RED) {
             poseFactory = PoseFactory.degrees();
         } else {
